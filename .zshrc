@@ -161,6 +161,7 @@ alias gl='git log --oneline'
 
 # Tooling specific
 alias deploy_staging='git tag eks-staging -f && git push origin eks-staging -f'
+alias claude='claude --mcp-config ~/.claude/mcp_servers.json'
 
 #==========================================
 # FUNCTIONS
