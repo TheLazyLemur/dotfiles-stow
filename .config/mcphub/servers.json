@@ -1,0 +1,27 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "type": "stdio",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ]
+    },
+    "memory": {
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ],
+      "command": "npx"
+    },
+    "mcp-gopls": {
+      "command": "mcp-gopls"
+    },
+    "devserver": {
+      "command": "devserver",
+      "disabled": false
+    }
+  },
+  "nativeMCPServers": []
+}
