@@ -1,0 +1,73 @@
+shell-integration = zsh
+macos-option-as-alt = true
+shell-integration-features = no-cursor
+quit-after-last-window-closed = true
+bold-is-bright = true
+window-save-state = never
+
+theme = rose-pine
+
+font-family = "ZedMono Nerd Font"
+font-thicken = false
+font-feature=-calt, -liga, -dlig
+
+minimum-contrast = 1
+
+mouse-hide-while-typing = true
+
+window-decoration = true
+window-padding-color=extend-always
+window-theme=auto
+split-divider-color = FFFFFF
+window-padding-x=7
+window-padding-y=7
+background-opacity = 1
+background-blur
+
+adjust-underline-position = 40%
+adjust-underline-thickness = -60%
+adjust-cell-height = 30%
+adjust-cell-width = 10%
+
+cursor-style = block
+cursor-style-blink = true
+
+confirm-close-surface = false
+clipboard-paste-protection = false
+unfocused-split-opacity = 0.8
+
+keybind=clear
+
+keybind = ctrl+s>r=reload_config
+keybind = ctrl+s>i=inspector:toggle
+
+keybind = ctrl+a>n=new_tab
+keybind = ctrl+a>l=next_tab
+keybind = ctrl+a>h=previous_tab
+
+keybind = ctrl+s>v=new_split:right
+keybind = ctrl+s>s=new_split:down
+keybind = ctrl+s>q=close_surface
+
+keybind = ctrl+s>h=goto_split:left
+keybind = ctrl+s>l=goto_split:right
+keybind = ctrl+s>j=goto_split:bottom
+keybind = ctrl+s>k=goto_split:top
+
+keybind = ctrl+s>enter=toggle_split_zoom
+keybind = ctrl+s>w=toggle_quick_terminal
+
+keybind = ctrl+s>y=copy_to_clipboard
+keybind = ctrl+s>p=paste_from_clipboard
+
+keybind = super+c=copy_to_clipboard
+keybind = super+v=paste_from_clipboard
+
+
+keybind = ctrl+equal=increase_font_size:1
+keybind = ctrl+minus=decrease_font_size:1
+
+keybind = global:ctrl+shift+space=toggle_quick_terminal
+
+# custom-shader = game.glsl
+keybind = shift+enter=text:\n
