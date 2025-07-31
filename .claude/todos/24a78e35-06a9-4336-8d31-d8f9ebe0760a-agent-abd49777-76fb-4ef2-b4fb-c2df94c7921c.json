@@ -1,0 +1,50 @@
+[
+  {
+    "content": "Explore codebase structures and identify VTEX-related files",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Search for VTEX, source_reference, source_payment_id patterns",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Analyze payment instruction creation flows",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Examine webhook/callback handlers",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Investigate retry logic and timeout scenarios",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  },
+  {
+    "content": "Analyze client_key assignment logic",
+    "status": "completed",
+    "priority": "medium",
+    "id": "6"
+  },
+  {
+    "content": "Identify concurrency issues and race conditions",
+    "status": "completed",
+    "priority": "medium",
+    "id": "7"
+  },
+  {
+    "content": "Create comprehensive INVESTIGATION_REPORT.md",
+    "status": "completed",
+    "priority": "high",
+    "id": "8"
+  }
+]

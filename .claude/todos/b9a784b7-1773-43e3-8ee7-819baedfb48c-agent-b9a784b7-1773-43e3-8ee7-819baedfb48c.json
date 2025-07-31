@@ -1,0 +1,20 @@
+[
+  {
+    "content": "Check VTEX connector code for payment instruction creation",
+    "status": "in_progress",
+    "priority": "high",
+    "id": "19"
+  },
+  {
+    "content": "Look for source key header generation in VTEX",
+    "status": "pending",
+    "priority": "high",
+    "id": "20"
+  },
+  {
+    "content": "Check if VTEX might retry with different headers",
+    "status": "pending",
+    "priority": "high",
+    "id": "21"
+  }
+]

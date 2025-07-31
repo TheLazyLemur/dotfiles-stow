@@ -1,0 +1,26 @@
+[
+  {
+    "content": "Explore claude-instance directory to understand context",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Read and analyze PLAN.md file",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Use sequential-thinking to analyze the problem deeply",
+    "status": "in_progress",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Implement the solution from PLAN.md with best practices",
+    "status": "pending",
+    "priority": "high",
+    "id": "4"
+  }
+]

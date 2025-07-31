@@ -1,0 +1,26 @@
+[
+  {
+    "content": "Run investigator subagent to analyze error handling in TFG TBE client tender type mapping",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Run code-flow-mapper subagent to trace execution paths",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Run planner subagent to create implementation plan based on both reports",
+    "status": "in_progress",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Present the plan to user for approval",
+    "status": "pending",
+    "priority": "high",
+    "id": "4"
+  }
+]

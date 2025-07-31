@@ -1,0 +1,20 @@
+[
+  {
+    "content": "Investigation 1: Analyze database constraint and duplicate patterns",
+    "status": "in_progress",
+    "priority": "high",
+    "id": "25"
+  },
+  {
+    "content": "Investigation 2: Trace VTEX idempotency key generation logic",
+    "status": "in_progress",
+    "priority": "high",
+    "id": "26"
+  },
+  {
+    "content": "Investigation 3: Examine payserv validation and BFF flow",
+    "status": "in_progress",
+    "priority": "high",
+    "id": "27"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "content": "Use investigator subagent to create INVESTIGATION_REPORT.md",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Use code-flow-mapper subagent to create FLOW_REPORT.md",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Use planner subagent to create PLAN.md from both reports",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Enter plan mode and present plan to user",
+    "status": "in_progress",
+    "priority": "high",
+    "id": "4"
+  }
+]

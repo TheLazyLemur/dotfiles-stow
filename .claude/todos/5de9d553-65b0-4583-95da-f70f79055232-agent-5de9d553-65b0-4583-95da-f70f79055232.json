@@ -1,0 +1,26 @@
+[
+  {
+    "content": "Examine the existing test structure and error handling code",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Identify the exact error case that needs test coverage",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Create a comprehensive test case for the mapping rule not found scenario",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Verify the test covers all edge cases and follows existing patterns",
+    "status": "in_progress",
+    "priority": "medium",
+    "id": "4"
+  }
+]

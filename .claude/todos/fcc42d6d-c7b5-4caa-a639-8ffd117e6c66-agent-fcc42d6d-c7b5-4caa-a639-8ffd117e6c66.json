@@ -1,0 +1,32 @@
+[
+  {
+    "content": "Add error logging for missing mapping rule (lines 211-216)",
+    "status": "completed",
+    "priority": "high",
+    "id": "5"
+  },
+  {
+    "content": "Add error logging for missing tender type (lines 226-229)",
+    "status": "completed",
+    "priority": "high",
+    "id": "6"
+  },
+  {
+    "content": "Add getAvailableMappingKeys() helper function",
+    "status": "completed",
+    "priority": "high",
+    "id": "7"
+  },
+  {
+    "content": "Update unit tests for error logging scenarios",
+    "status": "completed",
+    "priority": "medium",
+    "id": "8"
+  },
+  {
+    "content": "Run existing test suite to verify no regressions",
+    "status": "completed",
+    "priority": "medium",
+    "id": "9"
+  }
+]
