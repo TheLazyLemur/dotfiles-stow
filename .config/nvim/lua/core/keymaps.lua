@@ -3,6 +3,7 @@ local map = vim.keymap.set ---@type fun(mode: string|string[], lhs: string, rhs:
 local snacks = require("snacks")
 local bookmark = require("bookmark")
 local term = require("tuiwrapper")
+local claude = require("claude_integration")
 
 map("n", "<C-h>", "<C-w>h")
 map("n", "<C-j>", "<C-w>j")
@@ -221,6 +222,19 @@ end)
 map("n", "<leader>c", function()
     term.claude_toggle()
 end)
+
+map("n", "<leader><leader>m", function()
+    local prompt = vim.fn.input("MCP Prompt: ")
+    if prompt ~= "" then
+        claude.prompt(prompt)
+    else
+        vim.notify("Prompt cannot be empty", vim.log.levels.ERROR)
+    end
+end, { desc = "MCP Prompt" })
+
+-- Claude chat UI keymaps
+map("n", "<leader><leader>c", claude.open_chat, { desc = "Open Claude Chat" })
+map("n", "<leader><leader>x", claude.clear_chat, { desc = "Clear Claude Chat" })
 
 map({ "n", "t" }, "<leader>tf", ":ToggleTerm<CR>")
 
