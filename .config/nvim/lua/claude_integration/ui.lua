@@ -187,7 +187,7 @@ end
 local message_tracker = {
     current_assistant_message_id = nil,
     current_assistant_content = {},
-    current_tool_uses = {}
+    current_tool_uses = {},
 }
 
 -- Handle different types of streaming messages
@@ -266,7 +266,7 @@ end
 function M.handle_result_message(message)
     -- Finalize any current message
     M.finalize_current_message()
-    
+
     -- Show session summary if needed
     if message.total_cost_usd then
         M.show_session_summary(message)
@@ -282,7 +282,7 @@ function M.add_assistant_marker()
     end
 
     local lines = vim.api.nvim_buf_get_lines(chat_bufnr, 0, -1, false)
-    
+
     -- Remove empty prompt line if it exists
     if lines[#lines] == "> " then
         table.remove(lines)
@@ -290,7 +290,7 @@ function M.add_assistant_marker()
 
     table.insert(lines, assistant_marker)
     table.insert(lines, "")
-    
+
     vim.api.nvim_buf_set_lines(chat_bufnr, 0, -1, false, lines)
 end
 
@@ -299,7 +299,7 @@ function M.handle_text_content(text)
     if not text or text == "" then
         return
     end
-    
+
     -- Update the current message content
     table.insert(message_tracker.current_assistant_content, text)
     M.update_current_message_display()
@@ -310,9 +310,9 @@ function M.handle_tool_use_content(tool_use)
     if not tool_use.name then
         return
     end
-    
+
     message_tracker.current_tool_uses[tool_use.id] = tool_use
-    
+
     -- Show tool usage indicator
     local tool_indicator = "🔧 Using tool: " .. tool_use.name
     if tool_use.input then
@@ -328,7 +328,7 @@ function M.handle_tool_use_content(tool_use)
             tool_indicator = tool_indicator .. " (" .. input_summary:sub(1, -2) .. ")"
         end
     end
-    
+
     table.insert(message_tracker.current_assistant_content, tool_indicator)
     M.update_current_message_display()
 end
@@ -351,9 +351,9 @@ function M.update_current_message_display()
     if not chat_bufnr or not vim.api.nvim_buf_is_valid(chat_bufnr) then
         return
     end
-    
+
     local lines = vim.api.nvim_buf_get_lines(chat_bufnr, 0, -1, false)
-    
+
     -- Find the last assistant marker
     local assistant_marker_line = nil
     for i = #lines, 1, -1 do
@@ -362,26 +362,26 @@ function M.update_current_message_display()
             break
         end
     end
-    
+
     if not assistant_marker_line then
         return
     end
-    
+
     -- Remove old content after the marker
     local new_lines = {}
     for i = 1, assistant_marker_line + 1 do
         table.insert(new_lines, lines[i])
     end
-    
+
     -- Add current content
     local content_text = table.concat(message_tracker.current_assistant_content, "\n")
     local content_lines = vim.split(content_text, "\n", { plain = true })
     for _, line in ipairs(content_lines) do
         table.insert(new_lines, line)
     end
-    
+
     vim.api.nvim_buf_set_lines(chat_bufnr, 0, -1, false, new_lines)
-    
+
     -- Scroll to bottom
     local win = vim.fn.bufwinnr(chat_bufnr)
     if win ~= -1 then
@@ -402,7 +402,7 @@ function M.finalize_current_message()
             vim.api.nvim_buf_set_lines(chat_bufnr, 0, -1, false, lines)
         end
     end
-    
+
     -- Reset tracker
     message_tracker.current_assistant_message_id = nil
     message_tracker.current_assistant_content = {}
@@ -414,20 +414,20 @@ function M.show_session_summary(result_message)
     if not chat_bufnr or not vim.api.nvim_buf_is_valid(chat_bufnr) then
         return
     end
-    
+
     local lines = vim.api.nvim_buf_get_lines(chat_bufnr, 0, -1, false)
-    
+
     local summary = string.format(
         "💰 Session complete - Cost: $%.4f | Duration: %.1fs | Tokens: %d",
         result_message.total_cost_usd or 0,
         (result_message.duration_ms or 0) / 1000,
-        (result_message.usage and result_message.usage.input_tokens or 0) + 
-        (result_message.usage and result_message.usage.output_tokens or 0)
+        (result_message.usage and result_message.usage.input_tokens or 0)
+            + (result_message.usage and result_message.usage.output_tokens or 0)
     )
-    
+
     table.insert(lines, summary)
     table.insert(lines, "")
-    
+
     vim.api.nvim_buf_set_lines(chat_bufnr, 0, -1, false, lines)
 end
 
@@ -455,67 +455,39 @@ function M.send_prompt()
     -- Add user message to chat
     M.append_to_chat(prompt, true)
 
-    -- Prepare Claude command
-    local cmd = "claude"
-    local args = {
-        "--output-format",
-        "stream-json",
-        "--verbose",
-        "--permission-prompt-tool",
-        "mcp__permission__approval_prompt",
-        "--system-prompt",
-        "You are an AI assitant integrated into neovim. You responses are always rendered in Markdown. The permission prompt tool mcp is used to request user approval for actions that require it. It is also integrated into the MCP server running in the background.",
-        "--mcp-config",
-        "/Users/danielr/dotfiles/.config/nvim/config.json",
-    }
+    -- Use command service for execution
+    local command_service = require("claude_integration.services.command_service").new()
 
-    -- Add resume flag if we have a session ID
-    if current_session_id then
-        table.insert(args, "--resume")
-        table.insert(args, current_session_id)
-    end
-
-    table.insert(args, "-p")
-    table.insert(args, prompt)
-
-    -- Start the job
-    job_id = vim.fn.jobstart({ cmd, unpack(args) }, {
-        stdout_buffered = false,
-        stderr_buffered = false,
-        pty = true,
-        on_stdout = function(_, data)
-            if data then
-                for _, line in ipairs(data) do
-                    if line ~= "" and line ~= nil then
-                        -- Each line should be a complete ND-JSON message
-                        local message = M.parse_claude_streaming_message(line)
-                        if message then
-                            vim.schedule(function()
-                                M.handle_streaming_message(message)
-                            end)
-                        end
-                    end
-                end
-            end
-        end,
-        on_stderr = function(_, data)
-            if data then
-                for _, line in ipairs(data) do
-                    if line ~= "" then
+    job_id = command_service:execute(prompt, current_session_id, {
+        on_stdout = function(data)
+            for _, line in ipairs(data) do
+                if line ~= "" and line ~= nil then
+                    -- Each line should be a complete ND-JSON message
+                    local message = M.parse_claude_streaming_message(line)
+                    if message then
                         vim.schedule(function()
-                            vim.notify("Claude error: " .. line, vim.log.levels.ERROR)
+                            M.handle_streaming_message(message)
                         end)
                     end
                 end
             end
         end,
-        on_exit = function(_, exit_code)
+        on_stderr = function(data)
+            for _, line in ipairs(data) do
+                if line ~= "" then
+                    vim.schedule(function()
+                        vim.notify("Claude error: " .. line, vim.log.levels.ERROR)
+                    end)
+                end
+            end
+        end,
+        on_exit = function(exit_code)
             vim.schedule(function()
                 is_processing = false
                 -- Finalize any remaining message and add prompt marker
                 M.finalize_current_message()
                 M.add_prompt_marker()
-                
+
                 if exit_code ~= 0 then
                     vim.notify("Claude command failed with exit code: " .. exit_code, vim.log.levels.ERROR)
                 end
