@@ -1,6 +1,11 @@
 local M = {}
 
 local mcp_job_id = nil
+-- Configuration constants
+local MAX_LOG_ENTRIES = 1000
+local MCP_SERVER_PORT = ":8080"
+local MCP_SERVER_STRATEGY = "stdio"
+
 local mcp_log_buffer = {}
 local pending_requests = {}
 local message_buffer = ""
@@ -9,6 +14,12 @@ local log_mcp_data = function(data, source)
     local timestamp = os.date("%H:%M:%S")
     local log_entry = string.format("[%s] MCP %s: %s", timestamp, source, vim.inspect(data))
     table.insert(mcp_log_buffer, log_entry)
+    
+    -- Prevent unbounded buffer growth
+    if #mcp_log_buffer > MAX_LOG_ENTRIES then
+        table.remove(mcp_log_buffer, 1)
+    end
+    
     print(log_entry)
 end
 
@@ -18,10 +29,15 @@ local send_permission_response
 
 -- Helper functions for diff preview
 local apply_edit_to_content = function(content, old_string, new_string)
+    if not content or not old_string then
+        return nil, "Invalid input: content or old_string is nil"
+    end
+    
     local start_pos, end_pos = string.find(content, old_string, 1, true)
-    if not start_pos then
+    if not start_pos or not end_pos then
         return nil, "Could not find exact match for old_string"
     end
+    
     return string.sub(content, 1, start_pos - 1) .. new_string .. string.sub(content, end_pos + 1)
 end
 
@@ -64,8 +80,18 @@ local setup_diff_keymaps = function(buf, request_id, file_path)
 end
 
 local handle_existing_file_diff = function(file_path, old_string, new_string)
+    if not file_path then
+        vim.notify("Error: file_path is nil", vim.log.levels.ERROR)
+        return nil
+    end
+    
     vim.cmd("edit " .. vim.fn.fnameescape(file_path))
     local buf = vim.api.nvim_get_current_buf()
+    
+    if not vim.api.nvim_buf_is_valid(buf) then
+        vim.notify("Error: Failed to open buffer for " .. file_path, vim.log.levels.ERROR)
+        return nil
+    end
 
     local current_content = table.concat(vim.api.nvim_buf_get_lines(buf, 0, -1, false), "\n")
     local modified_content, error_msg = apply_edit_to_content(current_content, old_string, new_string)
@@ -98,9 +124,19 @@ local handle_new_file_diff = function(file_path, new_string)
 end
 
 local show_edit_diff_preview = function(request)
-    local file_path = request.input.file_path or "unknown file"
+    if not request or not request.input then
+        vim.notify("Error: Invalid request object", vim.log.levels.ERROR)
+        return
+    end
+    
+    local file_path = request.input.file_path
     local old_string = request.input.old_string or ""
     local new_string = request.input.new_string or ""
+    
+    if not file_path then
+        vim.notify("Error: No file_path provided in request", vim.log.levels.ERROR)
+        return
+    end
 
     local buf
     if vim.fn.filereadable(file_path) == 1 then
@@ -270,7 +306,7 @@ local mcp_server_start = function()
     end
 
     local cmd = "agent"
-    local args = { "--port", ":8080", "--strategy", "stdio" }
+    local args = { "--port", MCP_SERVER_PORT, "--strategy", MCP_SERVER_STRATEGY }
 
     local job_opts = {
         on_stdout = function(_, data, _)
@@ -297,10 +333,16 @@ local mcp_server_start = function()
 
     mcp_job_id = vim.fn.jobstart({ cmd, unpack(args) }, job_opts)
 
-    if mcp_job_id > 0 then
+    if mcp_job_id and mcp_job_id > 0 then
         log_mcp_data("MCP server started with job ID: " .. mcp_job_id, "START")
+    elseif mcp_job_id == 0 then
+        log_mcp_data("Invalid arguments provided to MCP server", "ERROR")
+        mcp_job_id = nil
+    elseif mcp_job_id == -1 then
+        log_mcp_data("MCP server command not executable: " .. cmd, "ERROR")
+        mcp_job_id = nil
     else
-        log_mcp_data("Failed to start MCP server. Error code: " .. mcp_job_id, "ERROR")
+        log_mcp_data("Failed to start MCP server. Unknown error", "ERROR")
         mcp_job_id = nil
     end
 end
